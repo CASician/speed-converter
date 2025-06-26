@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speed_converter/settings.dart';
 import 'env.dart';
 
 class Home extends StatefulWidget {
@@ -17,7 +18,7 @@ class _HomeState extends State<Home> {
   String? _minPerKmError;
 
   String firstResponse = "---";
-  String _conversionResult = 'Cosa converti oggi?';
+  String _conversionResult = 'Click on blank spaces';
 
   void _convert() {
     setState(() {
@@ -119,7 +120,9 @@ class _HomeState extends State<Home> {
         elevation: 0,
         scrolledUnderElevation: 0.0,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.settings, color: Env.sixth))
+          IconButton(onPressed: () {
+            showSettingsDialog(context);
+          }, icon: Icon(Icons.settings, color: Env.second))
         ],
       ),
       resizeToAvoidBottomInset: false,
@@ -129,18 +132,14 @@ class _HomeState extends State<Home> {
         },
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Env.third, Env.fourth, Env.fifth],
-            ),
+            color: Env.third,
           ),
           child: Center(
             child: Column(
               children: [
                 const SizedBox(height: 40),
                 Text(
-                  "🏃⏱️‍🏃‍♀️",
+                  "Speed Converter",
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -148,7 +147,7 @@ class _HomeState extends State<Home> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 100),
                 Container(
                   width: 300,
                   padding: const EdgeInsets.all(16),
@@ -181,7 +180,7 @@ class _HomeState extends State<Home> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text('Converti', style: TextStyle(color: Env.first)),
+                          child: const Text('Convert', style: TextStyle(color: Env.first)),
                         ),
                         const SizedBox(height: 20),
                         Text(
