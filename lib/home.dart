@@ -13,8 +13,9 @@ class _HomeState extends State<Home> {
   final TextEditingController _minPerKmController = TextEditingController();
   final TextEditingController _kmPerHourController = TextEditingController();
 
-  bool _isMinPerKmEnabled = true;
-  bool _isKmPerHourEnabled = true;
+  bool isUserUsingMiles = false;
+  bool _isMinPerKmEnabled = false;
+  bool _isKmPerHourEnabled = false;
   String? _minPerKmError;
 
   String firstResponse = "---";
@@ -59,7 +60,7 @@ class _HomeState extends State<Home> {
       if (text.isEmpty) {
         setState(() {
           _minPerKmError = null;
-          _isKmPerHourEnabled = true;
+          _isKmPerHourEnabled = false;
         });
       } else {
         _isKmPerHourEnabled = false;
@@ -111,28 +112,45 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _openSettings() async {
+    // Rimuovi il focus prima di aprire il dialog
+    FocusScope.of(context).unfocus();
+
+    // Apri il dialog delle impostazioni
+    await showSettingsDialog(context);
+
+    // Assicurati che il focus non torni sui campi dopo aver chiuso il dialog
+    if (mounted) {
+      await Future.delayed(const Duration(milliseconds: 10));
+      FocusScope.of(context).unfocus();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Env.third,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0.0,
         actions: [
-          IconButton(onPressed: () {
-            showSettingsDialog(context);
-          }, icon: Icon(Icons.settings, color: Env.second))
+          IconButton(
+              onPressed: _openSettings,
+              icon: Icon(Icons.settings, color: Env.second))
         ],
       ),
+      backgroundColor: Env.third,
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
+        // The container is needed so the Gesture Detector can work as intended:
+        // without you can on focus keyboard only by clicking on actual components
+        // of center, but not on the background.
         child: Container(
           decoration: BoxDecoration(
-            color: Env.third,
+            color: Colors.transparent,
           ),
           child: Center(
             child: Column(
@@ -143,9 +161,9 @@ class _HomeState extends State<Home> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Env.first, // più trasparente
+                    color: Env.first,
                   ),
-                  textAlign: TextAlign.center,
+                 textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 100),
                 Container(
@@ -211,13 +229,23 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildConversionLabels() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text("min/km", style: MyTextStyle.textStyle()),
-        Text("km/h", style: MyTextStyle.textStyle()),
-      ],
-    );
+    if (!isUserUsingMiles){
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("min/km", style: MyTextStyle.textStyle()),
+          Text("km/h", style: MyTextStyle.textStyle()),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("min/miles", style: MyTextStyle.textStyle()),
+          Text("miles/h", style: MyTextStyle.textStyle()),
+        ],
+      );
+    }
   }
 
   Widget _buildConversionInputs() {
